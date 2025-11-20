@@ -24,7 +24,7 @@ AI 智能體（Agent）將透過與環境（Environment）的互動，利用試�
     * **[優化]** 整合 CSV 數據記錄與收斂狀況判斷。
 4.  **Helper (`helper.py`)**
     * 負責視覺化訓練過程。
-    * **[優化]** 支援即時圖表更新。
+    * **[優化]** 支援即時圖表更新與自動存檔 (`training_graph.png`)。
 
 ---
 
@@ -118,16 +118,16 @@ graph TD
     Init --> LoopStart{遊戲迴圈}
     
     LoopStart --> GetState[Agent: 獲取當前狀態 State_Old]
-    GetState --> Action[Agent: 決定動作 Action (Epsilon-Greedy)]
+    GetState --> Action["Agent: 決定動作 Action (Epsilon-Greedy)"]
     Action --> EnvStep[Game: 執行動作 play_step]
     
     EnvStep --> CalcDist{距離計算}
-    CalcDist -->|靠近食物| RewardPlus[Reward +0.1]
-    CalcDist -->|遠離食物| RewardMinus[Reward -0.1]
+    CalcDist -->|靠近食物| RewardPlus["Reward +0.1"]
+    CalcDist -->|遠離食物| RewardMinus["Reward -0.1"]
     
     RewardPlus & RewardMinus --> CheckEvent{檢查事件}
-    CheckEvent -->|吃到食物| RewardEat[Reward +10]
-    CheckEvent -->|死亡| RewardDie[Reward -10]
+    CheckEvent -->|吃到食物| RewardEat["Reward +10"]
+    CheckEvent -->|死亡| RewardDie["Reward -10"]
     CheckEvent -->|無事發生| RewardKeep[維持距離獎勵]
     
     RewardEat & RewardDie & RewardKeep --> GetNewState[Agent: 獲取新狀態 State_New]
