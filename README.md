@@ -19,12 +19,90 @@ AI 智能體（Agent）將透過與環境（Environment）的互動，利用試�
 2.  **Model (`model.py`)**
     * 定義深度神經網路 (`Linear_QNet`)：輸入狀態 -> 隱藏層 -> 輸出動作 Q 值。
     * 定義訓練器 (`QTrainer`)：執行貝爾曼方程式 (Bellman Equation) 的 Loss 計算與反向傳播。
-3.  **Agent (`agent.py`)**
-    * 系統總指揮。負責獲取狀態、做出決策（探索 vs 利用）、儲存記憶（Experience Replay）並觸發訓練。
-    * **[優化]** 整合 CSV 數據記錄與收斂狀況判斷。
-4.  **Helper (`helper.py`)**
-    * 負責視覺化訓練過程。
-    * **[優化]** 支援即時圖表更新與自動存檔 (`training_graph.png`)。
+    * ### Q-Learning 訓練機制 
+      `QTrainer` 類別是本專案的核心訓練引擎，負責根據 AI 的經驗來更新神經網路的權重。它實作了 **Deep Q-Learning** 演算法，透過比較「預測結果」與「實際結果」的差異來優化模型。
+      
+      #### 核心原理：貝爾曼方程式 (Bellman Equation)
+      
+      Q-Learning 的核心概念在於更新 Q 值（Quality，代表在某個狀態下採取某個動作的預期價值）。我們使用 **貝爾曼方程式** 來計算目標 Q 值 : 
+  
+      $Q_{target}(s, a) = r + \gamma \cdot \max_{a'} Q(s', a') $
+
+      其中：
+      * **$s$ (State)**: 當前的狀態。
+      * **$a$ (Action)**: 當前採取的動作。
+      * **$r$ (Reward)**: 執行動作後獲得的立即獎勵。
+      * **$s'$ (Next State)**: 執行動作後進入的下一個狀態。
+      * **$\gamma$ (Gamma)**: 折扣率 (Discount Factor)，通常設為 0.9。它決定了 AI 對「未來獎勵」的重視程度（0 代表只看眼前，1 代表極度重視長遠）。
+      * **$\max_{a'} Q(s', a')$**: AI 預測在下一個狀態 $s'$ 中，能獲得的最大潛在獎勵。
+      
+      ---
+      
+      #### 損失函數 (Loss Function)
+      
+      為了訓練神經網路，我們需要一個指標來衡量「預測有多準」。本專案使用 **均方誤差 (Mean Squared Error, MSE)**：
+      
+      $Loss = \frac{1}{N} \sum (Q_{target} - Q_{predicted})^2$
+      
+      
+      * **$Q_{predicted}$**: 神經網路當前預測的 Q 值。
+      * **$Q_{target}$**: 根據貝爾曼方程式計算出的「正確答案」。
+      * **目標**: 透過優化器 (Adam Optimizer) 調整網路權重，使 Loss 最小化。
+      
+      ---
+      
+      #### 訓練步驟詳解 (`train_step`)
+      
+      在程式碼 `train_step` 函式中，訓練流程如下：
+      
+      1.  **前向傳播 (Prediction):**
+          將當前狀態 $s$ 輸入神經網路，得到預測的 Q 值。
+          ```python
+          pred = self.model(state)  # 預測值
+          ```
+      
+      2.  **計算目標值 (Target Calculation):**
+          這是最關鍵的一步。我們先複製一份預測值作為 `target`，然後只更新**實際採取的那個動作**的數值。
+      
+          * **如果遊戲結束 (Done):** 沒有未來狀態，Q 值等於當下獎勵
+            $Q_{new} = r $
+          * **如果遊戲未結束 (Not Done):** Q 值等於當下獎勵加上打折後的未來最大獎勵
+            $Q_{new} = r + \gamma \cdot \max(Q(next\_state)) $
+      
+          ```python
+          target = pred.clone()
+          for idx in range(len(done)):
+              Q_new = reward[idx]
+              if not done[idx]:
+                  # 貝爾曼方程式實作
+                  Q_new = reward[idx] + self.gamma * torch.max(self.model(next_state[idx]))
+              
+              # 只更新該次決策對應的動作索引 (Action Index)
+              target[idx][torch.argmax(action[idx]).item()] = Q_new
+          ```
+      
+      3.  **計算損失與反向傳播 (Optimization):**
+          比較 `target` (目標) 與 `pred` (預測) 的差異，並更新權重。
+          ```python
+          self.optimizer.zero_grad()       # 1. 梯度歸零
+          loss = self.criterion(target, pred) # 2. 計算 Loss (MSE)
+          loss.backward()                  # 3. 反向傳播 (計算梯度)
+          self.optimizer.step()            # 4. 更新權重
+          ```
+      
+      #### 優化器設定
+      
+      * **Optimizer:** `Adam` (Adaptive Moment Estimation)
+          * 這是一種自適應學習率的優化演算法，比傳統的 SGD 收斂更快且更穩定。
+      * **Learning Rate (LR):** `0.001`
+          * 控制每次權重更新的幅度。設得太高會導致震盪無法收斂，太低則學習太慢。
+   
+   3.  **Agent (`agent.py`)**
+       * 系統總指揮。負責獲取狀態、做出決策（探索 vs 利用）、儲存記憶（Experience Replay）並觸發訓練。
+       * **[優化]** 整合 CSV 數據記錄與收斂狀況判斷。
+   4.  **Helper (`helper.py`)**
+       * 負責視覺化訓練過程。
+       * **[優化]** 支援即時圖表更新與自動存檔 (`training_graph.png`)。
 
 ---
 
