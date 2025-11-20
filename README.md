@@ -31,11 +31,11 @@ AI 智能體（Agent）將透過與環境（Environment）的互動，利用試�
 ## 功能規格
 
 ### 1. 核心演算法
-* **模型架構**：Feed Forward Neural Network (Linear)
-    * Input Layer: 11 個神經元 (對應 11 個布林狀態)
-    * Hidden Layer: 256 個神經元 (ReLU Activation)
-    * Output Layer: 3 個神經元 (Action: [Straight, Right, Left])
-* **優化器**：Adam Optimizer
+* **模型架構**：Feed Forward Neural Network (以輸入乘上權重來獲得輸出（輸入對輸出）)
+    * 輸入 Layer: 11 個神經元 (對應 11 個布林狀態)
+    * 隱藏 Layer: 256 個神經元 (ReLU Activation)
+    * 輸出 Layer: 3 個神經元 (Action: [Straight, Right, Left])
+* **優化器**：Adam Optimizer (對過去梯度的方向做梯度速度調整)
 * **損失函數**：MSE Loss (均方誤差)
 
 ### 2. 狀態定義 (State Representation)
