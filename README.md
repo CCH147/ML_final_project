@@ -50,52 +50,6 @@ AI 智能體（Agent）將透過與環境（Environment）的互動，利用試�
       * **目標**: 透過優化器 (Adam Optimizer) 調整網路權重，使 Loss 最小化。
       
       ---
-      
-      #### 訓練步驟詳解 (`train_step`)
-      
-      在程式碼 `train_step` 函式中，訓練流程如下：
-      
-      1.  **前向傳播 (Prediction):**
-          將當前狀態 $s$ 輸入神經網路，得到預測的 Q 值。
-          ```python
-          pred = self.model(state)  # 預測值
-          ```
-      
-      2.  **計算目標值 (Target Calculation):**
-          這是最關鍵的一步。我們先複製一份預測值作為 `target`，然後只更新**實際採取的那個動作**的數值。
-      
-          * **如果遊戲結束 (Done):** 沒有未來狀態，Q 值等於當下獎勵
-            $Q_{new} = r $
-          * **如果遊戲未結束 (Not Done):** Q 值等於當下獎勵加上打折後的未來最大獎勵
-            $Q_{new} = r + \gamma \cdot \max(Q(next\_state)) $
-      
-          ```python
-          target = pred.clone()
-          for idx in range(len(done)):
-              Q_new = reward[idx]
-              if not done[idx]:
-                  # 貝爾曼方程式實作
-                  Q_new = reward[idx] + self.gamma * torch.max(self.model(next_state[idx]))
-              
-              # 只更新該次決策對應的動作索引 (Action Index)
-              target[idx][torch.argmax(action[idx]).item()] = Q_new
-          ```
-      
-      3.  **計算損失與反向傳播 (Optimization):**
-          比較 `target` (目標) 與 `pred` (預測) 的差異，並更新權重。
-          ```python
-          self.optimizer.zero_grad()       # 1. 梯度歸零
-          loss = self.criterion(target, pred) # 2. 計算 Loss (MSE)
-          loss.backward()                  # 3. 反向傳播 (計算梯度)
-          self.optimizer.step()            # 4. 更新權重
-          ```
-      
-      #### 優化器設定
-      
-      * **Optimizer:** `Adam` (Adaptive Moment Estimation)
-          * 這是一種自適應學習率的優化演算法，比傳統的 SGD 收斂更快且更穩定。
-      * **Learning Rate (LR):** `0.001`
-          * 控制每次權重更新的幅度。設得太高會導致震盪無法收斂，太低則學習太慢。
    
    3.  **Agent (`agent.py`)**
        * 系統總指揮。負責獲取狀態、做出決策（探索 vs 利用）、儲存記憶（Experience Replay）並觸發訓練。
