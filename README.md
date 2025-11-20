@@ -38,6 +38,40 @@ AI 智能體（Agent）將透過與環境（Environment）的互動，利用試�
 * **優化器**：Adam Optimizer (對過去梯度的方向做梯度速度調整)
 * **損失函數**：MSE Loss (均方誤差)
 
+#### 令輸入狀態向量為 $x \in \mathbb{R}^{11}$。
+
+* 1. 隱藏層計算 (Hidden Layer Calculation)
+輸入向量經過一次線性轉換 (Linear Transformation)，再通過 ReLU (Rectified Linear Unit) 激活函數，以提取高維特徵。
+
+$$
+h = \text{ReLU}(W_1 x + b_1)
+$$
+
+其中：
+* $W_1 \in \mathbb{R}^{256 \times 11}$ 為連接輸入層與隱藏層的 **權重矩陣 (Weight Matrix)**。
+* $b_1 \in \mathbb{R}^{256}$ 為隱藏層的 **偏差向量 (Bias Vector)**。
+* 激活函數定義為 $\text{ReLU}(z) = \max(0, z)$。
+
+* 2. 輸出層計算 (Output Layer Calculation)
+隱藏層提取的特徵經過第二次線性轉換，映射為最終的 Q 值輸出。
+
+$$
+y = W_2 h + b_2
+$$
+
+其中：
+* $y \in \mathbb{R}^{3}$ 為輸出向量，包含各動作的 Q 值: $[Q_{\text{straight}}, Q_{\text{right}}, Q_{\text{left}}]$。
+* $W_2 \in \mathbb{R}^{3 \times 256}$ 為連接隱藏層與輸出層的 **權重矩陣**。
+* $b_2 \in \mathbb{R}^{3}$ 為輸出層的 **偏差向量**。
+
+* 3. 決策制定 (Decision Making)
+智能體採用貪婪策略 (Greedy Policy)，選擇 Q 值最大的動作索引作為下一步的行動。
+
+$$
+\text{Action} = \arg\max(y)
+$$
+
+
 ### 2. 狀態定義 (State Representation)
 AI 接收的 11 個輸入特徵：
 * **危險偵測 (3)**：正前方、右方、左方是否有障礙物。
