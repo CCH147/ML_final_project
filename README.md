@@ -197,15 +197,15 @@ graph TD
     CheckEat -->|No| CalcPostDist[計算移動後距離 Dist_After]
     CalcPostDist --> CompDist{距離比較?}
     
-    CompDist -->|靠近 Closer| RewardPlus["Reward (+0.1) + 步數懲罰"]
-    CompDist -->|遠離 Farther| RewardMinus["Reward (-0.2) + 步數懲罰"]
+    CompDist -->|靠近| RewardPlus["Reward (+0.1) + 步數懲罰"]
+    CompDist -->|遠離| RewardMinus["Reward (-0.2) + 步數懲罰"]
     
     RewardDie & RewardEat & RewardPlus & RewardMinus --> GetNewState[Agent: 獲取新狀態 State_New]
     
     GetNewState --> TrainShort[Agent: 短期記憶訓練 Train Short]
     TrainShort --> Remember[Agent: 存入記憶庫 Memory]
     
-    Remember --> IsDone{遊戲結束 Done?}
+    Remember --> IsDone{遊戲結束?}
     IsDone -->|No| LoopStart
     IsDone -->|Yes| TrainLong[Agent: 長期記憶訓練 Train Long]
     
