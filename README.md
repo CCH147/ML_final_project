@@ -188,7 +188,7 @@ graph TD
     Action --> CalcPreDist[Game: 計算移動前距離 Dist_Before]
     CalcPreDist --> EnvStep[Game: 執行移動 Move]
     
-    EnvStep --> CheckCol{檢查碰撞?}
+    EnvStep --> CheckCol{檢查是否碰撞?}
     CheckCol -->|Yes| RewardDie["Reward -10 (Game Over)"]
     
     CheckCol -->|No| CheckEat{檢查吃到食物?}
