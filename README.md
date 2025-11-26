@@ -12,11 +12,11 @@ AI 智能體（Agent）將透過與環境（Environment）的互動，利用試�
 ```mermaid
 graph TD
     %% 定義樣式
-    classDef file fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef core fill:#e1f5fe,stroke:#0277bd,stroke-width:2px;
-    classDef game fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
-    classDef model fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
-    classDef util fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+    classDef file fill:#f9f9f9,stroke:#333,stroke-width:2px,color:#000;
+    classDef core fill:#e1f5fe,stroke:#0277bd,stroke-width:2px,color:#000;
+    classDef game fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000;
+    classDef model fill:#fff3e0,stroke:#ef6c00,stroke-width:2px,color:#000;
+    classDef util fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000;
 
     subgraph Project ["Snake AI"]
         direction TB
