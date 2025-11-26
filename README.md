@@ -7,7 +7,77 @@
 AI 智能體（Agent）將透過與環境（Environment）的互動，利用試錯法（Trial and Error）學習如何最大化生存時間並獲取最高分數。本實作在基礎 DQN 架構上，額外整合了 **獎勵機制優化 (Reward Shaping)** 以加速收斂，並包含完整的 **訓練數據監控系統**（圖表自動儲存與 CSV 數據記錄），以便於分析模型的收斂與發散情況。
 
 ---
+## Breakdown
 
+```mermaid
+graph TD
+    %% 定義樣式
+    classDef file fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef core fill:#e1f5fe,stroke:#0277bd,stroke-width:2px;
+    classDef game fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef model fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
+    classDef util fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+
+    subgraph Project ["Snake AI"]
+        direction TB
+        
+        %% Agent 模組
+        subgraph AgentFile ["agent.py (核心控制層)"]
+            direction TB
+            Agent["<b>Agent Class</b><br/>智能體"]
+            Mem["<b>Memory (deque)</b><br/>經驗重播緩衝區"]
+            MainLoop["<b>train()</b><br/>主訓練迴圈"]
+            CSVLog["<b>CSV Logger</b><br/>數據紀錄"]
+        end
+        
+        %% Game 模組
+        subgraph GameFile ["game.py (環境層)"]
+            direction TB
+            Game["<b>SnakeGameAI Class</b><br/>遊戲本體"]
+            UI["<b>Pygame UI</b><br/>畫面繪製"]
+            Logic["<b>Game Logic</b><br/>移動/碰撞/食物"]
+            Reward["<b>Reward System</b><br/>距離與懲罰計算"]
+        end
+
+        %% Model 模組
+        subgraph ModelFile ["model.py (大腦層)"]
+            direction TB
+            QNet["<b>Linear_QNet Class</b><br/>神經網路架構"]
+            Trainer["<b>QTrainer Class</b><br/>Loss & Optimizer"]
+        end
+
+        %% Helper 模組
+        subgraph HelperFile ["helper.py (工具層)"]
+            Plot["<b>plot() Function</b><br/>即時圖表繪製"]
+        end
+    end
+
+    %% 關係連線 (重點修復：所有標籤都加上雙引號)
+    Agent -->|"控制 "| Game
+    Agent -->|"初始化 "| QNet
+    Agent -->|"使用 "| Trainer
+    Agent -->|"儲存經驗 "| Mem
+    Agent -->|"呼叫 "| Plot
+    
+    MainLoop -->|"驅動 "| Agent
+    MainLoop -->|"寫入 "| CSVLog
+    
+    Game -->|"回傳狀態 "| Agent
+    Game -->|"包含了 "| Logic
+    Game -->|"包含了 "| Reward
+    Game -->|"包含了 "| UI
+    
+    Trainer -->|"更新權重 "| QNet
+    
+    %% 套用樣式
+    class AgentFile,Agent,Mem,MainLoop,CSVLog core;
+    class GameFile,Game,UI,Logic,Reward game;
+    class ModelFile,QNet,Trainer model;
+    class HelperFile,Plot util;
+```
+
+
+---	
 ## 系統構成與流程
 
 本系統由四個核心模組組成，彼此協同運作：
