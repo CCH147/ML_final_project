@@ -180,27 +180,32 @@ AI 接收的 11 個輸入特徵：
 
 ```mermaid
 graph TD
-    Start[程式啟動] --> Init[初始化 Game, Agent, Model]
-    Init --> LoopStart{遊戲迴圈}
+    Start[程式啟動 Start] --> Init[初始化 Game, Agent, Model]
+    Init --> LoopStart{遊戲迴圈 Game Loop}
     
     LoopStart --> GetState[Agent: 獲取當前狀態 State_Old]
-    GetState --> Action["Agent: 決定動作 Action (Epsilon-Greedy)"]
-    Action --> EnvStep[Game: 執行動作 play_step]
+    GetState --> Action["Agent: 決定動作 (Epsilon-Greedy)"]
+    Action --> CalcPreDist[Game: 計算移動前距離 Dist_Before]
+    CalcPreDist --> EnvStep[Game: 執行移動 Move]
     
-    EnvStep --> CalcDist{距離計算}
-    CalcDist -->|靠近食物| RewardPlus["Reward +0.1"]
-    CalcDist -->|遠離食物| RewardMinus["Reward -0.1"]
+    EnvStep --> CheckCol{檢查碰撞?}
+    CheckCol -->|Yes| RewardDie["Reward -10 (Game Over)"]
     
-    RewardPlus & RewardMinus --> CheckEvent{檢查事件}
-    CheckEvent -->|吃到食物| RewardEat["Reward +10"]
-    CheckEvent -->|死亡| RewardDie["Reward -10"]
-    CheckEvent -->|無事發生| RewardKeep[維持距離獎勵]
+    CheckCol -->|No| CheckEat{檢查吃到食物?}
+    CheckEat -->|Yes| RewardEat["Reward +10"]
     
-    RewardEat & RewardDie & RewardKeep --> GetNewState[Agent: 獲取新狀態 State_New]
+    CheckEat -->|No| CalcPostDist[計算移動後距離 Dist_After]
+    CalcPostDist --> CompDist{距離比較?}
+    
+    CompDist -->|靠近 Closer| RewardPlus["Reward (+0.1) + 步數懲罰"]
+    CompDist -->|遠離 Farther| RewardMinus["Reward (-0.2) + 步數懲罰"]
+    
+    RewardDie & RewardEat & RewardPlus & RewardMinus --> GetNewState[Agent: 獲取新狀態 State_New]
+    
     GetNewState --> TrainShort[Agent: 短期記憶訓練 Train Short]
     TrainShort --> Remember[Agent: 存入記憶庫 Memory]
     
-    Remember --> IsDone{遊戲結束?}
+    Remember --> IsDone{遊戲結束 Done?}
     IsDone -->|No| LoopStart
     IsDone -->|Yes| TrainLong[Agent: 長期記憶訓練 Train Long]
     
