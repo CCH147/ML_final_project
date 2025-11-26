@@ -1,13 +1,12 @@
 import pygame
 import random
 from enum import Enum
-from collections import namedtuple
+from collections import namedtuple, deque  # <--- 新增 deque 用於 BFS
 import numpy as np
-import math  # <--- 新增這一行
+import math
 
 pygame.init()
 font = pygame.font.Font('arial.ttf', 25)
-#font = pygame.font.SysFont('arial', 25)
 
 class Direction(Enum):
     RIGHT = 1
@@ -25,7 +24,7 @@ BLUE2 = (0, 100, 255)
 BLACK = (0,0,0)
 
 BLOCK_SIZE = 20
-SPEED = 40
+SPEED = 80 # 建議稍微調快一點訓練比較不無聊
 
 class SnakeGameAI:
 
@@ -61,6 +60,48 @@ class SnakeGameAI:
         if self.food in self.snake:
             self._place_food()
 
+    # --- 新增：洪水填充演算法 (計算可用空間) ---
+    def _get_accessible_area(self, start_x, start_y):
+        # 使用 BFS (廣度優先搜尋) 來計算從蛇頭開始有多少格子可以走
+        queue = deque([Point(start_x, start_y)])
+        visited = set()
+        visited.add(Point(start_x, start_y))
+        
+        # 把蛇的身體當作障礙物
+        obstacles = set(self.snake)
+        
+        count = 0
+        max_search = len(self.snake) * 2  # 優化效能：不用算完整張地圖，只要確定空間夠大就好
+        
+        while queue:
+            curr = queue.popleft()
+            count += 1
+            
+            # 如果算出來的空間已經比蛇身長大很多，就不用算了，代表安全
+            if count > max_search:
+                return count
+
+            # 檢查上下左右四個方向
+            neighbors = [
+                Point(curr.x + BLOCK_SIZE, curr.y),
+                Point(curr.x - BLOCK_SIZE, curr.y),
+                Point(curr.x, curr.y + BLOCK_SIZE),
+                Point(curr.x, curr.y - BLOCK_SIZE)
+            ]
+            
+            for n in neighbors:
+                # 檢查邊界
+                if n.x < 0 or n.x >= self.w or n.y < 0 or n.y >= self.h:
+                    continue
+                # 檢查障礙物 (撞到身體)
+                if n in obstacles:
+                    continue
+                # 檢查是否走過
+                if n not in visited:
+                    visited.add(n)
+                    queue.append(n)
+        return count
+
 
     def play_step(self, action):
         self.frame_iteration += 1
@@ -69,7 +110,9 @@ class SnakeGameAI:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+        
         dist_before = math.sqrt((self.head.x - self.food.x)**2 + (self.head.y - self.food.y)**2)
+        
         # 2. move
         self._move(action) # update the head
         self.snake.insert(0, self.head)
@@ -89,21 +132,26 @@ class SnakeGameAI:
             self._place_food()
         else:
             self.snake.pop()
-            dist_after = math.sqrt((self.head.x - self.food.x)**2 + (self.head.y - self.food.y)**2)
             
-            # 生存成本 (步數懲罰)：每走一步都扣一點分，逼它走最短路徑
-            step_penalty = -0.01 
+            # --- 新增邏輯：計算可用空間 ---
+            # 算出蛇頭目前所在的區域有多大
+            accessible_space = self._get_accessible_area(self.head.x, self.head.y)
             
-            if dist_after < dist_before:
-                # 靠近食物：給予獎勵 (+0.1)
-                reward = 0.1 
+            # 如果 可用空間 < 蛇身長度，代表走進死路了，必死無疑
+            # 給予巨大的懲罰，讓它學會不要走進去
+            if accessible_space < len(self.snake):
+                reward = -10 
             else:
-                # 遠離食物：給予加重懲罰 (-0.2)
-                # 這樣 (+0.1) + (-0.2) = -0.1，加上步數懲罰，原地打轉會嚴重虧損
-                reward = -0.2 
-            
-            # 將步數懲罰加進去
-            reward += step_penalty
+                # 只有在空間足夠時，才考慮距離獎勵
+                dist_after = math.sqrt((self.head.x - self.food.x)**2 + (self.head.y - self.food.y)**2)
+                step_penalty = -0.05 # 稍微加重步數懲罰，逼它走快點
+                
+                if dist_after < dist_before:
+                    reward = 1   # 靠近食物給多一點
+                else:
+                    reward = -1.5 # 遠離食物懲罰重一點
+                
+                reward += step_penalty
         
         # 5. update ui and clock
         self._update_ui()
