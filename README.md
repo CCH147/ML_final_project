@@ -6,6 +6,11 @@
 
 AI 智能體（Agent）將透過與環境（Environment）的互動，利用試錯法（Trial and Error）學習如何最大化生存時間並獲取最高分數。本實作在基礎 DQN 架構上，額外整合了 **獎勵機制優化 (Reward Shaping)** 以加速收斂，並包含完整的 **訓練數據監控系統**（圖表自動儲存與 CSV 數據記錄），以便於分析模型的收斂與發散情況。
 
+
+# GAME
+
+![image](Snake.gif)
+
 ---
 ## Breakdown
 
