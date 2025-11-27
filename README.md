@@ -11,7 +11,7 @@ AI 智能體（Agent）將透過與環境（Environment）的互動，利用試�
 
 ```mermaid
 graph TD
-    %% 定義樣式
+    %% 定義樣式 (節點樣式)
     classDef file fill:#f9f9f9,stroke:#333,stroke-width:2px,color:#000;
     classDef core fill:#e1f5fe,stroke:#0277bd,stroke-width:2px,color:#000;
     classDef game fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000;
@@ -69,11 +69,16 @@ graph TD
     
     Trainer -->|"更新權重 "| QNet
     
-    %% 套用樣式
+    %% 套用樣式 (節點分類)
     class AgentFile,Agent,Mem,MainLoop,CSVLog core;
     class GameFile,Game,UI,Logic,Reward game;
     class ModelFile,QNet,Trainer model;
     class HelperFile,Plot util;
+
+    %% stroke: 線條顏色 (設為純黑 #000000)
+    %% stroke-width: 線條粗細 (設為 2px，加粗才看得清楚)
+    %% color: 文字標籤顏色 (設為純黑)
+    linkStyle default stroke:#000000,stroke-width:2px,color:white;
 ```
 
 
@@ -118,7 +123,12 @@ graph TD
       * **$Q_{predicted}$**: 神經網路當前預測的 Q 值。
       * **$Q_{target}$**: 根據貝爾曼方程式計算出的「正確答案」。
       * **目標**: 透過優化器 (Adam Optimizer) 調整網路權重，使 Loss 最小化。
-      
+	      - 假設 AI 輸出層的預測是 [5.0, 2.0, 1.0] (直行, 右轉, 左轉)。
+	      - AI 實際上選了「直行」。
+	      - 貝爾曼公式算出直行的真實價值應該是 7.0。
+	      - 我們只把 target 改成 [7.0, 2.0, 1.0]。
+	      - 計算 MSE Loss 時，右轉和左轉的誤差是 0 (因為沒變)，只有直行的誤差 (7.0 - 5.0)^2
+
       ---
    
    3.  **Agent (`agent.py`)**
