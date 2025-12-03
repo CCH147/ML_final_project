@@ -83,11 +83,8 @@ graph TD
     %% stroke: 線條顏色 (設為純黑 #000000)
     %% stroke-width: 線條粗細 (設為 2px，加粗才看得清楚)
     %% color: 文字標籤顏色 (設為純黑)
-<<<<<<< HEAD
+
     linkStyle default stroke:#000000,stroke-width:2px,color:dark;
-=======
-    linkStyle default stroke:#000000,stroke-width:2px,color:dark;
->>>>>>> 6b6849e3b5cbef747c24e12f4430cc5eff3d5d87
 ```
 
 
@@ -286,7 +283,7 @@ graph TD
     Start[程式啟動 Start] --> Init[初始化 Game, Agent, Model]
     Init --> LoopStart{遊戲迴圈 Game Loop}
     
-    LoopStart --> GetState[Agent: 獲取當前狀態(含 FloodFill特徵) State_Old]
+    LoopStart --> GetState[Agent: 獲取當前狀態(含FloodFill特徵 State_Old]
     GetState --> Action["Agent: 決定動作 (Epsilon-Greedy)"]
     Action --> CalcPreDist[Game: 計算移動前距離 Dist_Before]
     CalcPreDist --> EnvStep[Game: 執行移動 Move]
