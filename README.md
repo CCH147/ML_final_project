@@ -266,12 +266,12 @@ AI 接收的 14 個輸入特徵：
 
 ## 方法比較
 
-# 加入FloodFill特徵前
+### 加入FloodFill特徵前
 
 ![image](beforeFL.png)
 
 
-# 加入FloodFill特徵後
+### 加入FloodFill特徵後
 
 ![image](afterFL.png)
 
@@ -283,7 +283,7 @@ graph TD
     Start[程式啟動 Start] --> Init[初始化 Game, Agent, Model]
     Init --> LoopStart{遊戲迴圈 Game Loop}
     
-    LoopStart --> GetState[Agent: 獲取當前狀態(含FloodFill特徵 State_Old]
+    LoopStart --> GetState[Agent: 獲取當前狀態 State_Old]
     GetState --> Action["Agent: 決定動作 (Epsilon-Greedy)"]
     Action --> CalcPreDist[Game: 計算移動前距離 Dist_Before]
     CalcPreDist --> EnvStep[Game: 執行移動 Move]
