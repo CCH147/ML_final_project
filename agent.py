@@ -17,7 +17,7 @@ class Agent:
         self.epsilon = 0 # randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = Linear_QNet(11, 256, 3)
+        self.model = Linear_QNet(14, 256, 3) # 改成 14
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
 
@@ -33,6 +33,23 @@ class Agent:
         dir_u = game.direction == Direction.UP
         dir_d = game.direction == Direction.DOWN
 
+        pt_straight = game.get_point_in_direction([1, 0, 0])
+        pt_right    = game.get_point_in_direction([0, 1, 0])
+        pt_left     = game.get_point_in_direction([0, 0, 1])
+
+        # 2. 對這三個點執行洪水填充
+        # 如果 可用空間 < 蛇身長度，就是死路 (True)
+        snake_len = len(game.snake)
+        
+        area_straight = game.get_accessible_area(pt_straight)
+        is_trap_straight = area_straight < snake_len
+
+        area_right = game.get_accessible_area(pt_right)
+        is_trap_right = area_right < snake_len
+
+        area_left = game.get_accessible_area(pt_left)
+        is_trap_left = area_left < snake_len
+        can_reach_tail = game.is_tail_reachable()
         state = [
             # Danger straight
             (dir_r and game.is_collision(point_r)) or 
@@ -62,7 +79,11 @@ class Agent:
             game.food.x < game.head.x,  # food left
             game.food.x > game.head.x,  # food right
             game.food.y < game.head.y,  # food up
-            game.food.y > game.head.y  # food down
+            game.food.y > game.head.y,  # food down
+            is_trap_straight, # 特徵 12
+            is_trap_right,    # 特徵 13
+            is_trap_left     # 特徵 14
+            #1 if can_reach_tail else 0  # 第 15 個特徵
             ]
 
         return np.array(state, dtype=int)
@@ -87,6 +108,8 @@ class Agent:
     def get_action(self, state):
         # random moves: tradeoff exploration / exploitation
         self.epsilon = 80 - self.n_games
+        if self.epsilon < 0:
+            self.epsilon = 0
         final_move = [0,0,0]
         if random.randint(0, 200) < self.epsilon:
             move = random.randint(0, 2)

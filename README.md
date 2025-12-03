@@ -83,7 +83,7 @@ graph TD
     %% stroke: 線條顏色 (設為純黑 #000000)
     %% stroke-width: 線條粗細 (設為 2px，加粗才看得清楚)
     %% color: 文字標籤顏色 (設為純黑)
-    linkStyle default stroke:#000000,stroke-width:2px,color:white;
+    linkStyle default stroke:#000000,stroke-width:2px,color:black;
 ```
 
 
@@ -149,7 +149,7 @@ graph TD
 
 ### 1. 核心演算法
 * **模型架構**：Feed Forward Neural Network (以輸入乘上權重來獲得輸出（輸入對輸出）)
-    * 輸入 Layer: 11 個神經元 (對應 11 個布林狀態)
+    * 輸入 Layer: 14 個神經元 (對應 14 個布林狀態) 
     * 隱藏 Layer: 256 個神經元 (ReLU Activation)
     * 輸出 Layer: 3 個神經元 (Action: [Straight, Right, Left])
 * **優化器**：Adam Optimizer (對過去梯度的方向做梯度速度調整)
@@ -190,10 +190,11 @@ $$
 
 
 ### 2. 狀態定義 (State Representation)
-AI 接收的 11 個輸入特徵：
+AI 接收的 14 個輸入特徵：
 * **危險偵測 (3)**：正前方、右方、左方是否有障礙物。
 * **移動方向 (4)**：目前是否向左、右、上、下移動。
 * **食物方位 (4)**：食物位於蛇頭的左、右、上、下。
+* **[新增] 死路偵測 (3)**：利用 Flood Fill 計算直走、右轉、左轉後的空間是否小於蛇身長度 (是否會被困住)。
 
 ### 3. 獎勵機制 (Reward System) [優化項目]
 為了引導 AI 更快學習，採用以下混合獎勵策略：
@@ -262,6 +263,18 @@ AI 接收的 11 個輸入特徵：
 
 ---
 
+## 方法比較
+
+# 加入FloodFill特徵前
+
+![image](beforeFL.png)
+
+
+# 加入FloodFill特徵後
+
+![image](afterFL.png)
+
+
 ## 流程圖
 
 ```mermaid
@@ -269,7 +282,7 @@ graph TD
     Start[程式啟動 Start] --> Init[初始化 Game, Agent, Model]
     Init --> LoopStart{遊戲迴圈 Game Loop}
     
-    LoopStart --> GetState[Agent: 獲取當前狀態 State_Old]
+    LoopStart --> GetState[Agent: 獲取當前狀態(含 FloodFill特徵) State_Old]
     GetState --> Action["Agent: 決定動作 (Epsilon-Greedy)"]
     Action --> CalcPreDist[Game: 計算移動前距離 Dist_Before]
     CalcPreDist --> EnvStep[Game: 執行移動 Move]
