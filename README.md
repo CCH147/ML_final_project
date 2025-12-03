@@ -83,7 +83,11 @@ graph TD
     %% stroke: 線條顏色 (設為純黑 #000000)
     %% stroke-width: 線條粗細 (設為 2px，加粗才看得清楚)
     %% color: 文字標籤顏色 (設為純黑)
-    linkStyle default stroke:#000000,stroke-width:2px,color:black;
+<<<<<<< HEAD
+    linkStyle default stroke:#000000,stroke-width:2px,color:dark;
+=======
+    linkStyle default stroke:#000000,stroke-width:2px,color:dark;
+>>>>>>> 6b6849e3b5cbef747c24e12f4430cc5eff3d5d87
 ```
 
 
