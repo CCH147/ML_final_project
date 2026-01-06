@@ -1,5 +1,10 @@
 # Snake AI with Reinforcement Learning (DQN)
 
+## 組員
+- C111112119 陳俊睿
+- C111112133 張昌輝
+- C111112160 李秉穎
+
 ## 專案簡介
 
 本專案實作了一個能夠自主學習遊玩經典遊戲「貪食蛇」的人工智慧系統。系統基於強化學習（Reinforcement Learning）中的 **深度 Q 學習 (Deep Q-Learning, DQN)** 演算法。
