@@ -14,7 +14,7 @@ AI 智能體（Agent）將透過與環境（Environment）的互動，利用試�
 
 # GAME
 
-![image](Snake.gif)
+![image](./images/Snake.gif)
 
 ---
 ## Breakdown
@@ -298,12 +298,12 @@ AI 接收的 14 個輸入特徵：
 
 ### 加入FloodFill特徵前
 
-![image](beforeFL.png)
+![image](./images/beforeFL.png)
 
 
 ### 加入FloodFill特徵後
 
-![image](training_plot_0107.png)
+![image](./images/training_plot_0107.png)
 
 
 ## 流程圖
