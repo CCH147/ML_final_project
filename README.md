@@ -312,13 +312,11 @@ AI 接收的 14 個輸入特徵：
 
 ## 方法比較
 
-### 加入FloodFill特徵前
+### 加入FloodFill特徵前（最高分只能在60分左右，平均約為22分上下。）
+![image](./images/training_plot_beforeBFS.png)
 
-![image](./images/beforeFL.png)
 
-
-### 加入FloodFill特徵後
-
+### 加入FloodFill特徵後（最高分可以在140左右，加入BFS後平均得分可以達到沒有加入演算法的上限！）
 ![image](./images/training_plot_0107.png)
 
 
@@ -362,6 +360,11 @@ graph TD
 
 ---
 
-## LOSS function check (可視化)
+## LOSS function check (##可視化｜加入BFS演算法前)
+loss function沒有穩定下降，而且分數最高分只能在**60分**左右。
+![image](./images/loss_fuction_0107.png)
 
+
+## LOSS function check (##可視化｜加入BFS演算法後)
+加入演算法後，loss function明顯隨著訓練場次增多而下降，同時最高分可以在140左右。
 ![image](./images/loss_fuction_0107.png)
