@@ -342,3 +342,10 @@ graph TD
     TrainLong --> UpdateLog[更新 CSV 與 Graph]
     UpdateLog --> ResetGame[重置遊戲]
     ResetGame --> LoopStart
+```
+
+---
+
+## LOSS function check (可視化)
+
+![image](loss.png)
