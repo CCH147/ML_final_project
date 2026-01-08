@@ -303,7 +303,7 @@ AI 接收的 14 個輸入特徵：
 
 ### 加入FloodFill特徵後
 
-![image](afterFL.png)
+![image](training_plot_0107.png)
 
 
 ## 流程圖
