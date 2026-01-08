@@ -348,4 +348,4 @@ graph TD
 
 ## LOSS function check (可視化)
 
-![image](loss_fuction_0107.png)
+![image](./images/loss_fuction_0107.png)
