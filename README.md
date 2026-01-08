@@ -360,11 +360,11 @@ graph TD
 
 ---
 
-## LOSS function check (##可視化｜加入BFS演算法前)
+## LOSS function check (可視化｜加入BFS演算法前)
 loss function沒有穩定下降，而且分數最高分只能在**60分**左右。
-![image](./images/loss_fuction_0107.png)
+![image](./images/loss_convergence_beforeBFS.png)
 
 
-## LOSS function check (##可視化｜加入BFS演算法後)
+## LOSS function check (可視化｜加入BFS演算法後)
 加入演算法後，loss function明顯隨著訓練場次增多而下降，同時最高分可以在140左右。
 ![image](./images/loss_fuction_0107.png)
